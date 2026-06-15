@@ -5,9 +5,11 @@ namespace domain.implementations;
 public class Floor : IFloor
 {
     public int FloorNumber { get; }
-    
-    public Floor(int floorNumber)
-    {
+    public List<IPassenger> WaitingPassengers { get; set; }
+
+    public Floor(int floorNumber, List<IPassenger> initialWaitingPassengers)  
+    {   
+        WaitingPassengers = initialWaitingPassengers;
         FloorNumber = floorNumber;
     }
 }
