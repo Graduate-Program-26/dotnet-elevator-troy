@@ -18,7 +18,7 @@ public class PassengerElevator : IElevator
         Capacity = capacity;
         CurrentFloor = startingFloor;
         BoardedPassengers = new List<IPassenger>();
-        WishDirection = default;
+        WishDirection = Direction.None;
         _floors = floors;
     }
 
