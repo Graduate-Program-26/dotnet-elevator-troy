@@ -2,13 +2,15 @@ using domain.enums;
 
 namespace domain.interfaces;
 public interface IElevator
-{   
-    public List<IPassenger> BoardedPassengers { get; set; }
-    public int Capacity { get; set; }
-    public IFloor CurrentFloor { get; set; }
-    public Direction WishDirection { get;
-        set;
-    }
-    public void MoveUp();
-    public void MoveDown();
+{
+    List<IPassenger> BoardedPassengers { get; set; }
+    int Capacity { get; set; }
+    IFloor CurrentFloor { get; set; }
+    Direction WishDirection { get; set; }
+
+    void MoveUp(IFloor nextFloor);
+    void MoveDown(IFloor nextFloor);
+    void Board(IPassenger passenger);
+    void Deboard(IPassenger passenger);
+    void SetDirection(Direction direction);
 }
