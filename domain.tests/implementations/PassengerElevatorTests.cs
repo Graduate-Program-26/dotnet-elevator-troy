@@ -20,44 +20,33 @@ public class PassengerElevatorTests
     public void Constructor_InitializesWithStartingFloor()
     {
         var floor = CreateFloor(1);
-        var elevator = new PassengerElevator(10, floor.Object, new List<IFloor> { floor.Object });
+        var elevator = new PassengerElevator(10, floor.Object);
 
         Assert.Equal(floor.Object, elevator.CurrentFloor);
     }
-    
+
     [Fact]
     public void MoveUp_WhenNextFloorExists_UpdatesCurrentFloor()
     {
         var floor1 = CreateFloor(1);
         var floor2 = CreateFloor(2);
-        var floors = new List<IFloor> { floor1.Object, floor2.Object };
-        var elevator = new PassengerElevator(10, floor1.Object, floors);
+        var elevator = new PassengerElevator(10, floor1.Object);
 
-        elevator.MoveUp();
+        elevator.MoveUp(floor2.Object);
 
         Assert.Equal(floor2.Object, elevator.CurrentFloor);
     }
 
-    [Fact]
-    public void MoveUp_WhenAtTopFloor_DoesNotChangeCurrentFloor()
-    {
-        var floor1 = CreateFloor(1);
-        var floors = new List<IFloor> { floor1.Object };
-        var elevator = new PassengerElevator(10, floor1.Object, floors);
-
-        Assert.Throws<FloorOutOfBoundsException>(() => elevator.MoveUp());
-    }
     [Fact]
     public void MoveUp_CalledMultipleTimes_AdvancesFloorCorrectly()
     {
         var floor1 = CreateFloor(1);
         var floor2 = CreateFloor(2);
         var floor3 = CreateFloor(3);
-        var floors = new List<IFloor> { floor1.Object, floor2.Object, floor3.Object };
-        var elevator = new PassengerElevator(10, floor1.Object, floors);
+        var elevator = new PassengerElevator(10, floor1.Object);
 
-        elevator.MoveUp();
-        elevator.MoveUp();
+        elevator.MoveUp(floor2.Object);
+        elevator.MoveUp(floor3.Object);
 
         Assert.Equal(floor3.Object, elevator.CurrentFloor);
     }
@@ -67,35 +56,23 @@ public class PassengerElevatorTests
     {
         var floor1 = CreateFloor(1);
         var floor2 = CreateFloor(2);
-        var floors = new List<IFloor> { floor1.Object, floor2.Object };
-        var elevator = new PassengerElevator(10, floor2.Object, floors);
+        var elevator = new PassengerElevator(10, floor2.Object);
 
-        elevator.MoveDown();
+        elevator.MoveDown(floor1.Object);
 
         Assert.Equal(floor1.Object, elevator.CurrentFloor);
     }
 
-    [Fact]
-    public void MoveDown_WhenAtBottomFloor_ThrowsFloorOutOfBoundsException()
-    {
-        var floor1 = CreateFloor(1);
-        var floors = new List<IFloor> { floor1.Object };
-        var elevator = new PassengerElevator(10, floor1.Object, floors);
-
-        Assert.Throws<FloorOutOfBoundsException>(() => elevator.MoveDown());
-    }
-    
     [Fact]
     public void MoveDown_CalledMultipleTimes_DescendsFloorCorrectly()
     {
         var floor1 = CreateFloor(1);
         var floor2 = CreateFloor(2);
         var floor3 = CreateFloor(3);
-        var floors = new List<IFloor> { floor1.Object, floor2.Object, floor3.Object };
-        var elevator = new PassengerElevator(10, floor3.Object, floors);
+        var elevator = new PassengerElevator(10, floor3.Object);
 
-        elevator.MoveDown();
-        elevator.MoveDown();
+        elevator.MoveDown(floor2.Object);
+        elevator.MoveDown(floor1.Object);
 
         Assert.Equal(floor1.Object, elevator.CurrentFloor);
     }
