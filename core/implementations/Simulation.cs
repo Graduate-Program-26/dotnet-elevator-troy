@@ -7,14 +7,17 @@ namespace core.implementations;
 public sealed class Simulation
 {
     private const double SpawnChance = 0.4;
-
+    public const int MinPassengerCount = 1;
+    public const int MaxPassengerCount = 100;
+    
     private readonly IList<IFloor> _floors;
     private readonly IList<IElevator> _elevators;
     private readonly Dictionary<int, IFloor> _floorsByNumber;
     private readonly Dictionary<IElevator, IFloor?> _targets;
     private readonly Random _random;
     private readonly int _passengerLimit;
-
+        
+    
     private int _spawned;
     private int _delivered;
 

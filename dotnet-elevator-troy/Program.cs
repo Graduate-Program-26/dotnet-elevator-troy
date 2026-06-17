@@ -3,12 +3,6 @@ using domain.implementations;
 using domain.interfaces;
 using display.implementations;
 
-const int MinFloors = 2;
-const int MaxFloors = 100;
-const int MinElevators = 1;
-const int MaxElevators = 10;
-const int MinPassengers = 1;
-const int MaxPassengers = 100;
 const int ElevatorCapacity = 8;
 const int TickDelayMs = 500;
 
@@ -23,9 +17,9 @@ static int ReadInt(string prompt, int min, int max)
     }
 }
 
-var floorCount = ReadInt("Floors: ", MinFloors, MaxFloors);
-var elevatorCount = ReadInt("Elevators: ", MinElevators, MaxElevators);
-var passengerCount = ReadInt("Passengers: ", MinPassengers, MaxPassengers);
+var floorCount    = ReadInt("Floors: ",     ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
+var elevatorCount = ReadInt("Elevators: ",  ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
+var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount,       Simulation.MaxPassengerCount);
 
 var random = new Random();
 

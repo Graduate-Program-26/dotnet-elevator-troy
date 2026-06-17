@@ -7,21 +7,23 @@ using domain.interfaces;
 
 public class ElevatorController
 {
+    public const int MinFloorCount = 2;
+    public const int MaxFloorCount = 99;
+    public const int MinElevatorCount = 1;
+    public const int MaxElevatorCount = 9;
+
     private readonly List<IFloor> _floors;
     private readonly List<IElevator> _elevators;
     private readonly IDispatchStrategy _dispatchStrategy;
 
     public ElevatorController(List<IFloor> floors, List<IElevator> elevators, IDispatchStrategy dispatchStrategy)
     {
-        if (floors.Count > 99)
-        {
+        if (floors.Count > MaxFloorCount)
             throw new FloorOutOfBoundsException(floors.Count);
-            
-        }
-        if (elevators.Count > 9)
-        {
+
+        if (elevators.Count > MaxElevatorCount)
             throw new TooManyElevatorsException(elevators.Count);
-        }
+
         _floors = floors;
         _elevators = elevators;
         _dispatchStrategy = dispatchStrategy;
@@ -55,8 +57,6 @@ public class ElevatorController
         elevator.SetDirection(Direction.None);
     }
 
-    public IFloor GetFloor(int floorNumber)
-    {
-        return _floors.First(f => f.FloorNumber == floorNumber);
-    }
+    public IFloor GetFloor(int floorNumber) =>
+        _floors.First(f => f.FloorNumber == floorNumber);
 }
