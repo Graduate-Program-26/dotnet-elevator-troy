@@ -35,7 +35,11 @@ public class ElevatorController
         MoveToFloor(elevator, targetFloor);
         return elevator;
     }
+    
+    public IElevator SelectElevator(IFloor targetFloor, IReadOnlyList<IElevator> candidates) =>
+        _dispatchStrategy.SelectElevator(candidates, targetFloor);
 
+    
     public void MoveToFloor(IElevator elevator, IFloor targetFloor)
     {
         while (elevator.CurrentFloor.FloorNumber != targetFloor.FloorNumber)

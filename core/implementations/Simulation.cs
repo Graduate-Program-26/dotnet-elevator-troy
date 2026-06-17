@@ -9,25 +9,31 @@ public sealed class Simulation
     private const double SpawnChance = 0.4;
     public const int MinPassengerCount = 1;
     public const int MaxPassengerCount = 100;
-    
+
     private readonly IList<IFloor> _floors;
     private readonly IList<IElevator> _elevators;
+    private readonly ElevatorController _controller;
     private readonly Dictionary<int, IFloor> _floorsByNumber;
     private readonly Dictionary<IElevator, IFloor?> _targets;
     private readonly Random _random;
     private readonly int _passengerLimit;
-        
-    
+
     private int _spawned;
     private int _delivered;
 
     public bool IsComplete => _spawned >= _passengerLimit && _delivered >= _passengerLimit;
     public int Delivered => _delivered;
 
-    public Simulation(IList<IFloor> floors, IList<IElevator> elevators, int passengerLimit, Random random)
+    public Simulation(
+        IList<IFloor> floors,
+        IList<IElevator> elevators,
+        ElevatorController controller,
+        int passengerLimit,
+        Random random)
     {
         _floors = floors;
         _elevators = elevators;
+        _controller = controller;
         _passengerLimit = passengerLimit;
         _random = random;
         _floorsByNumber = floors.ToDictionary(f => f.FloorNumber);
@@ -65,16 +71,25 @@ public sealed class Simulation
 
     private void AssignTargets()
     {
-        var floorsWithWaiting = _floors.Where(f => f.WaitingPassengers.Count > 0).ToList();
-        if (floorsWithWaiting.Count == 0) return;
+        var floorsNeedingService = _floors
+            .Where(f => f.WaitingPassengers.Count > 0 && !_targets.ContainsValue(f))
+            .ToList();
 
-        foreach (var elevator in _elevators.Where(e => _targets[e] == null))
-            _targets[elevator] = NearestFloor(elevator, floorsWithWaiting);
+        var idleElevators = _elevators
+            .Where(e => _targets[e] == null)
+            .ToList();
+
+        if (idleElevators.Count == 0) return;
+
+        foreach (var floor in floorsNeedingService)
+        {
+            if (idleElevators.Count == 0) break;
+
+            var elevator = _controller.SelectElevator(floor, idleElevators);
+            _targets[elevator] = floor;
+            idleElevators.Remove(elevator);
+        }
     }
-
-    private IFloor NearestFloor(IElevator elevator, IList<IFloor> candidates) =>
-        candidates.MinBy(f => Math.Abs(f.FloorNumber - elevator.CurrentFloor.FloorNumber))!;
-
     private void StepElevators()
     {
         foreach (var elevator in _elevators)
