@@ -1,5 +1,5 @@
-﻿using core.implementations;
-using core.strategies;
+﻿using application.implementations;
+using application.strategies;
 using domain.implementations;
 using domain.interfaces;
 using display.implementations;

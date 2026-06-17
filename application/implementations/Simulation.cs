@@ -2,7 +2,7 @@ using domain.enums;
 using domain.interfaces;
 using domain.implementations;
 
-namespace core.implementations;
+namespace application.implementations;
 
 public sealed class Simulation
 {

@@ -1,6 +1,6 @@
 using domain.exceptions;
 
-namespace core.implementations;
+namespace application.implementations;
 
 using domain.enums;
 using domain.interfaces;

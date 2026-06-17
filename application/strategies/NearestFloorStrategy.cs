@@ -1,4 +1,4 @@
-namespace core.strategies;
+namespace application.strategies;
 using domain.interfaces;
 
 public class NearestFloorStrategy : IDispatchStrategy
