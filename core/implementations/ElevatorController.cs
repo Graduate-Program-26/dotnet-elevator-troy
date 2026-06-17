@@ -1,3 +1,5 @@
+using domain.exceptions;
+
 namespace core.implementations;
 
 using domain.enums;
@@ -11,6 +13,15 @@ public class ElevatorController
 
     public ElevatorController(List<IFloor> floors, List<IElevator> elevators, IDispatchStrategy dispatchStrategy)
     {
+        if (floors.Count > 99)
+        {
+            throw new FloorOutOfBoundsException(floors.Count);
+            
+        }
+        if (elevators.Count > 9)
+        {
+            throw new TooManyElevatorsException(elevators.Count);
+        }
         _floors = floors;
         _elevators = elevators;
         _dispatchStrategy = dispatchStrategy;
