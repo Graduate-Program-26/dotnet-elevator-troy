@@ -26,7 +26,7 @@ public sealed class Simulation
 
     public bool IsComplete => _spawned >= _passengerLimit && _delivered >= _passengerLimit;
     public int Delivered => _delivered;
-    
+
     public Simulation(
         IList<IFloor> floors,
         IList<IElevator> elevators,
@@ -41,9 +41,6 @@ public sealed class Simulation
         _passengerLimit = passengerLimit;
         _random = random;
         _floorsByNumber = floors.ToDictionary(f => f.FloorNumber);
-        //dict is good way to store elevators as theyre now accessible by dictionary index
-        //but it has quirk where now each elevator spawns on its index floor instead of first floor
-        //The IFloor? cast is necessary or this doesnt compile, basically tell scompiler that it is dict<IElevator, IFloor>
         _targets = elevators.ToDictionary(e => e, e => (IFloor?)null);
         _logger = logger;
     }
@@ -58,13 +55,13 @@ public sealed class Simulation
     private void TrySpawnPassenger()
     {
         if (_spawned >= _passengerLimit || _random.NextDouble() >= SpawnChance) return;
-        
+
         var origin = PickRandomFloor();
         var destination = PickDifferentFloor(origin);
 
         origin.WaitingPassengers.Add(new Passenger(destination.FloorNumber, origin.FloorNumber));
         _spawned++;
-        _logger.Information($"Passenger spawned at {origin.FloorNumber} wants to go to {destination.FloorNumber}");
+        _logger.Information("Passenger spawned at {OriginFloor} wants to go to {DestinationFloor}", origin.FloorNumber, destination.FloorNumber);
     }
 
     private IFloor PickRandomFloor() =>
@@ -95,10 +92,11 @@ public sealed class Simulation
             var elevator = _controller.Dispatch(floor, idleElevators);
             _targets[elevator] = floor;
             var elevatorNumber = _elevators.IndexOf(elevator) + 1;
-            _logger.Information($"Elevator {elevatorNumber} dispatched to floor {floor.FloorNumber}");
+            _logger.Information("Elevator {ElevatorNumber} dispatched to floor {FloorNumber}", elevatorNumber, floor.FloorNumber);
             idleElevators.Remove(elevator);
         }
     }
+
     private void StepElevators()
     {
         foreach (var elevator in _elevators)
@@ -107,13 +105,13 @@ public sealed class Simulation
 
     private void StepElevator(IElevator elevator)
     {
-            var target = _targets[elevator];
-            if (target == null) return;
+        var target = _targets[elevator];
+        if (target == null) return;
 
-            if (elevator.CurrentFloor.FloorNumber == target.FloorNumber)
-                HandleArrival(elevator, target);
-            else
-                _controller.MoveToFloor(elevator, target);
+        if (elevator.CurrentFloor.FloorNumber == target.FloorNumber)
+            HandleArrival(elevator, target);
+        else
+            _controller.MoveToFloor(elevator, target);
     }
 
     private void HandleArrival(IElevator elevator, IFloor floor)
@@ -127,16 +125,15 @@ public sealed class Simulation
     private void BoardWaitingPassengers(IElevator elevator, IFloor floor)
     {
         foreach (var passenger in floor.WaitingPassengers.ToList())
-        {   
+        {
             int elevatorNumber = _elevators.IndexOf(elevator) + 1;
-            if (elevator.BoardedPassengers.Count >= elevator.Capacity) {
-                _logger.Warning($"Elevator {elevatorNumber} reached capacity") ;
+            if (elevator.BoardedPassengers.Count >= elevator.Capacity)
+            {
+                _logger.Warning("Elevator {ElevatorNumber} reached capacity", elevatorNumber);
                 break;
             }
             elevator.Board(passenger);
-            int count = elevator.BoardedPassengers.Count;
-            int capacity = elevator.Capacity;
-            _logger.Information($"Passenger boarded elevator {elevatorNumber} at capacity: {count}/{capacity} passengers");
+            _logger.Information("Passenger boarded elevator {ElevatorNumber} at capacity: {Count}/{Capacity} passengers", elevatorNumber, elevator.BoardedPassengers.Count, elevator.Capacity);
             floor.WaitingPassengers.Remove(passenger);
         }
     }
@@ -149,8 +146,7 @@ public sealed class Simulation
             elevator.Deboard(passenger);
             _delivered++;
             int elevatorNumber = _elevators.IndexOf(elevator) + 1;
-            _logger.Information($"Elevator {elevatorNumber} delivered passenger to floor: {elevator.CurrentFloor.FloorNumber}");
-            
+            _logger.Information("Elevator {ElevatorNumber} delivered passenger to floor {FloorNumber}", elevatorNumber, elevator.CurrentFloor.FloorNumber);
         }
     }
 
@@ -158,5 +154,4 @@ public sealed class Simulation
         elevator.BoardedPassengers.Count > 0
             ? _controller.GetFloor(elevator.BoardedPassengers.First().WantFloor)
             : null;
-
 }

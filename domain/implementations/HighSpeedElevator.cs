@@ -11,5 +11,6 @@ namespace domain.implementations;
         public HighSpeedElevator(int capacity, IFloor startingFloor)
             : base(capacity, startingFloor)
         {
+            FloorsPerTick = SpeedMultiplier;
         }
     }

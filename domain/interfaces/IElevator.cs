@@ -8,7 +8,7 @@ public interface IElevator
     int Capacity { get; }
     IFloor CurrentFloor { get; }
     Direction WishDirection { get; }
-
+    int FloorsPerTick { get; }
     void MoveUp(IFloor nextFloor);
     void MoveDown(IFloor nextFloor);
     void Board(IPassenger passenger);
