@@ -3,9 +3,9 @@ using domain.interfaces;
 
 namespace domain.implementations;
 
-public class PassengerElevator : ElevatorBase
+public class FreightElevator : ElevatorBase
 {
-    public PassengerElevator(int capacity, IFloor startingFloor)
+    public FreightElevator(int capacity, IFloor startingFloor)
         : base(capacity, startingFloor)
     {
     }

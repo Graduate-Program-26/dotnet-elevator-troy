@@ -1,12 +1,17 @@
 using domain.enums;
 
 namespace domain.interfaces;
+
 public interface IElevator
-{   
-    public List<IPassenger> BoardedPassengers { get; set; }
-    public int Capacity { get; set; }
-    public IFloor CurrentFloor { get; set; }
-    public Direction WishDirection { get; set; }
-    public void MoveUp();
-    public void MoveDown();
+{
+    IReadOnlyList<IPassenger> BoardedPassengers { get; }
+    int Capacity { get; }
+    IFloor CurrentFloor { get; }
+    Direction WishDirection { get; }
+    int FloorsPerTick { get; }
+    void MoveUp(IFloor nextFloor);
+    void MoveDown(IFloor nextFloor);
+    void Board(IPassenger passenger);
+    void Deboard(IPassenger passenger);
+    void SetDirection(Direction direction);
 }
