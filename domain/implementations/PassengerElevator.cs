@@ -1,9 +1,7 @@
 using domain.classes;
-
-namespace domain.implementations;
-
 using domain.interfaces;
 
+namespace domain.implementations;
 
 public class PassengerElevator : ElevatorBase
 {

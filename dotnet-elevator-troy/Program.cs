@@ -1,10 +1,12 @@
 ﻿using application.implementations;
 using application.strategies;
-using domain.implementations;
-using domain.interfaces;
+
 using display.implementations;
 
 using domain.exceptions;
+using domain.implementations;
+using domain.interfaces;
+
 using Serilog;
 
 const int elevatorCapacity = 8;
@@ -19,45 +21,53 @@ static int ReadInt(string prompt, int min, int max)
     while (true)
     {
         Console.Write(prompt);
-        if (int.TryParse(Console.ReadLine(), out var value) && value >= min && value <= max)
+        if (int.TryParse(Console.ReadLine(), out int value) && value >= min && value <= max)
+        {
             return value;
+        }
+
         Console.WriteLine($"Enter a number between {min} and {max}.");
     }
 }
 
-var floorCount = ReadInt("Floors: ", ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
-var normalELevatorCount   = ReadInt("Regular elevators: ", ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
-var highSpeedCount = ReadInt("High-speed elevators: ", 0,ElevatorController.MaxElevatorCount - normalELevatorCount);
-var elevatorCount  = normalELevatorCount + highSpeedCount;
-var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount, Simulation.MaxPassengerCount);
+int floorCount = ReadInt("Floors: ", ElevatorController.MinFloorCount, ElevatorController.MaxFloorCount);
+int normalELevatorCount = ReadInt("Regular elevators: ", ElevatorController.MinElevatorCount,
+    ElevatorController.MaxElevatorCount);
+int highSpeedCount = ReadInt("High-speed elevators: ", 0, ElevatorController.MaxElevatorCount - normalELevatorCount);
+int elevatorCount = normalELevatorCount + highSpeedCount;
+int passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount, Simulation.MaxPassengerCount);
 
-var random = new Random();
+Random random = new();
 
-var floors = Enumerable.Range(1, floorCount)
+List<IFloor> floors = Enumerable.Range(1, floorCount)
     .Select(n => (IFloor)new Floor(n, new List<IPassenger>()))
     .ToList();
 
 IFloor StartingFloor(int elevatorIndex, int total)
 {
     if (total == 1)
+    {
         return floors[0];
+    }
 
-    var index = elevatorIndex * (floorCount - 1) / (total - 1);
+    int index = elevatorIndex * (floorCount - 1) / (total - 1);
     return floors[index];
 }
-var regularElevators   = Enumerable.Range(0, normalELevatorCount)
+
+IEnumerable<IElevator> regularElevators = Enumerable.Range(0, normalELevatorCount)
     .Select(i => (IElevator)new PassengerElevator(elevatorCapacity, StartingFloor(i, elevatorCount)));
 
-var highSpeedElevators = Enumerable.Range(0, highSpeedCount)
-    .Select(i => (IElevator)new HighSpeedElevator(elevatorCapacity, StartingFloor(normalELevatorCount + i, elevatorCount)));
+IEnumerable<IElevator> highSpeedElevators = Enumerable.Range(0, highSpeedCount)
+    .Select(i =>
+        (IElevator)new HighSpeedElevator(elevatorCapacity, StartingFloor(normalELevatorCount + i, elevatorCount)));
 
 
-var elevators = regularElevators.Concat(highSpeedElevators).ToList();
+List<IElevator> elevators = regularElevators.Concat(highSpeedElevators).ToList();
 
-var strategy = new NearestFloorStrategy();
-var controller = new ElevatorController(floors, elevators, strategy);
-var simulation = new Simulation(floors, elevators, controller, passengerCount, random, Log.Logger);
-var renderer = new ConsoleRenderer(floors, elevators);
+NearestFloorStrategy strategy = new();
+ElevatorController controller = new(floors, elevators, strategy);
+Simulation simulation = new(floors, elevators, controller, passengerCount, random, Log.Logger);
+ConsoleRenderer renderer = new(floors, elevators);
 
 try
 {
@@ -67,7 +77,6 @@ try
         renderer.Render();
         Thread.Sleep(tickDelayMs);
     }
-
 }
 catch (ElevatorAtCapacityException ex)
 {
