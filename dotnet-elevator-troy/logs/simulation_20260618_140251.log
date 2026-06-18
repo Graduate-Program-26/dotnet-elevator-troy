@@ -1,0 +1,29 @@
+2026-06-18 14:02:57.937 +02:00 [INF] Passenger spawned at 4 wants to go to 9
+2026-06-18 14:02:57.948 +02:00 [INF] Elevator 4 dispatched to floor 4
+2026-06-18 14:02:57.948 +02:00 [INF] Passenger boarded elevator 4 at capacity: 1/8 passengers
+2026-06-18 14:02:58.966 +02:00 [INF] Passenger spawned at 8 wants to go to 6
+2026-06-18 14:02:58.966 +02:00 [INF] Elevator 8 dispatched to floor 8
+2026-06-18 14:02:58.966 +02:00 [INF] Passenger boarded elevator 8 at capacity: 1/8 passengers
+2026-06-18 14:02:59.982 +02:00 [INF] Passenger spawned at 1 wants to go to 3
+2026-06-18 14:02:59.982 +02:00 [INF] Elevator 1 dispatched to floor 1
+2026-06-18 14:02:59.982 +02:00 [INF] Passenger boarded elevator 1 at capacity: 1/8 passengers
+2026-06-18 14:03:00.490 +02:00 [INF] Elevator 8 delivered passenger to floor: 6
+2026-06-18 14:03:00.996 +02:00 [INF] Elevator 4 delivered passenger to floor: 9
+2026-06-18 14:03:01.500 +02:00 [INF] Passenger spawned at 2 wants to go to 7
+2026-06-18 14:03:01.500 +02:00 [INF] Elevator 2 dispatched to floor 2
+2026-06-18 14:03:01.500 +02:00 [INF] Elevator 1 delivered passenger to floor: 3
+2026-06-18 14:03:01.500 +02:00 [INF] Passenger boarded elevator 2 at capacity: 1/8 passengers
+2026-06-18 14:03:02.005 +02:00 [INF] Passenger spawned at 7 wants to go to 5
+2026-06-18 14:03:02.511 +02:00 [INF] Passenger spawned at 2 wants to go to 8
+2026-06-18 14:03:02.511 +02:00 [INF] Elevator 1 dispatched to floor 2
+2026-06-18 14:03:03.015 +02:00 [INF] Passenger spawned at 2 wants to go to 4
+2026-06-18 14:03:03.015 +02:00 [INF] Passenger boarded elevator 1 at capacity: 1/8 passengers
+2026-06-18 14:03:03.015 +02:00 [INF] Passenger boarded elevator 1 at capacity: 2/8 passengers
+2026-06-18 14:03:03.519 +02:00 [INF] Passenger spawned at 8 wants to go to 4
+2026-06-18 14:03:04.527 +02:00 [INF] Passenger boarded elevator 2 at capacity: 2/8 passengers
+2026-06-18 14:03:04.527 +02:00 [INF] Elevator 2 delivered passenger to floor: 7
+2026-06-18 14:03:06.042 +02:00 [INF] Elevator 2 delivered passenger to floor: 5
+2026-06-18 14:03:06.547 +02:00 [INF] Passenger boarded elevator 1 at capacity: 3/8 passengers
+2026-06-18 14:03:06.547 +02:00 [INF] Elevator 1 delivered passenger to floor: 8
+2026-06-18 14:03:09.069 +02:00 [INF] Elevator 1 delivered passenger to floor: 4
+2026-06-18 14:03:09.069 +02:00 [INF] Elevator 1 delivered passenger to floor: 4
