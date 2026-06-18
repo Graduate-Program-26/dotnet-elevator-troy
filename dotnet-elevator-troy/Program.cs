@@ -4,6 +4,8 @@ using domain.implementations;
 using domain.interfaces;
 using display.implementations;
 
+using domain.exceptions;
+
 const int elevatorCapacity = 8;
 const int tickDelayMs = 500;
 
@@ -46,11 +48,23 @@ var controller = new ElevatorController(floors, elevators, strategy);
 var simulation = new Simulation(floors, elevators, controller, passengerCount, random);
 var renderer   = new ConsoleRenderer(floors, elevators);
 
-while (!simulation.IsComplete)
+try
 {
-    simulation.Tick();
-    renderer.Render();
-    Thread.Sleep(tickDelayMs);
+    while (!simulation.IsComplete)
+    {
+        simulation.Tick();
+        renderer.Render();
+        Thread.Sleep(tickDelayMs);
+    }
+
+}
+catch (ElevatorAtCapacityException ex)
+{
+    Console.WriteLine(ex.Message);
+}
+catch (FloorOutOfBoundsException ex)
+{
+    Console.WriteLine(ex.Message);
 }
 
 Console.WriteLine($"Simulation complete. {simulation.Delivered} passengers delivered.");
