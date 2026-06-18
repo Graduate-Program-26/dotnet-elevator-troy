@@ -7,7 +7,6 @@ using display.implementations;
 using domain.exceptions;
 using Serilog;
 
-
 const int elevatorCapacity = 8;
 const int tickDelayMs = 500;
 
@@ -26,9 +25,11 @@ static int ReadInt(string prompt, int min, int max)
     }
 }
 
-var floorCount = ReadInt("Floors: ",     ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
-var elevatorCount  = ReadInt("Elevators: ",  ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
-var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount,        Simulation.MaxPassengerCount);
+var floorCount = ReadInt("Floors: ", ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
+var normalELevatorCount   = ReadInt("Regular elevators: ", ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
+var highSpeedCount = ReadInt("High-speed elevators: ", 0,ElevatorController.MaxElevatorCount - normalELevatorCount);
+var elevatorCount  = normalELevatorCount + highSpeedCount;
+var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount, Simulation.MaxPassengerCount);
 
 var random = new Random();
 
@@ -36,18 +37,22 @@ var floors = Enumerable.Range(1, floorCount)
     .Select(n => (IFloor)new Floor(n, new List<IPassenger>()))
     .ToList();
 
-IFloor StartingFloor(int elevatorIndex)
+IFloor StartingFloor(int elevatorIndex, int total)
 {
-    if (elevatorCount == 1)
+    if (total == 1)
         return floors[0];
 
-    var index = elevatorIndex * (floorCount - 1) / (elevatorCount - 1);
+    var index = elevatorIndex * (floorCount - 1) / (total - 1);
     return floors[index];
 }
+var regularElevators   = Enumerable.Range(0, normalELevatorCount)
+    .Select(i => (IElevator)new PassengerElevator(elevatorCapacity, StartingFloor(i, elevatorCount)));
 
-var elevators = Enumerable.Range(0, elevatorCount)
-    .Select(i => (IElevator)new PassengerElevator(elevatorCapacity, StartingFloor(i)))
-    .ToList();
+var highSpeedElevators = Enumerable.Range(0, highSpeedCount)
+    .Select(i => (IElevator)new HighSpeedElevator(elevatorCapacity, StartingFloor(normalELevatorCount + i, elevatorCount)));
+
+
+var elevators = regularElevators.Concat(highSpeedElevators).ToList();
 
 var strategy = new NearestFloorStrategy();
 var controller = new ElevatorController(floors, elevators, strategy);
