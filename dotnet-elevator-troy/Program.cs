@@ -5,9 +5,15 @@ using domain.interfaces;
 using display.implementations;
 
 using domain.exceptions;
+using Serilog;
+
 
 const int elevatorCapacity = 8;
 const int tickDelayMs = 500;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File($"logs/simulation_{DateTime.Now:yyyyMMdd_HHmmss}.log")
+    .CreateLogger();
 
 static int ReadInt(string prompt, int min, int max)
 {
@@ -20,7 +26,7 @@ static int ReadInt(string prompt, int min, int max)
     }
 }
 
-var floorCount     = ReadInt("Floors: ",     ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
+var floorCount = ReadInt("Floors: ",     ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
 var elevatorCount  = ReadInt("Elevators: ",  ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
 var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount,        Simulation.MaxPassengerCount);
 
@@ -45,7 +51,7 @@ var elevators = Enumerable.Range(0, elevatorCount)
 
 var strategy   = new NearestFloorStrategy();
 var controller = new ElevatorController(floors, elevators, strategy);
-var simulation = new Simulation(floors, elevators, controller, passengerCount, random);
+var simulation = new Simulation(floors, elevators, controller, passengerCount, random, Log.Logger);
 var renderer   = new ConsoleRenderer(floors, elevators);
 
 try
