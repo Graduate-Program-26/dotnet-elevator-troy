@@ -5,7 +5,7 @@ namespace application.implementations;
 using domain.enums;
 using domain.interfaces;
 
-public class ElevatorController
+public class ElevatorController : IElevatorController
 {
     public const int MinFloorCount = 2;
     public const int MaxFloorCount = 99;

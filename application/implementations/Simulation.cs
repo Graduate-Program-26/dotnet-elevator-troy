@@ -12,7 +12,7 @@ public sealed class Simulation
 
     private readonly IList<IFloor> _floors;
     private readonly IList<IElevator> _elevators;
-    private readonly ElevatorController _controller;
+    private readonly IElevatorController _controller;
     private readonly Dictionary<int, IFloor> _floorsByNumber;
     private readonly Dictionary<IElevator, IFloor?> _targets;
     private readonly Random _random;
@@ -23,11 +23,11 @@ public sealed class Simulation
 
     public bool IsComplete => _spawned >= _passengerLimit && _delivered >= _passengerLimit;
     public int Delivered => _delivered;
-
+    
     public Simulation(
         IList<IFloor> floors,
         IList<IElevator> elevators,
-        ElevatorController controller,
+        IElevatorController controller,
         int passengerLimit,
         Random random)
     {
