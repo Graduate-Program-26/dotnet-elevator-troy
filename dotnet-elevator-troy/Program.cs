@@ -1,10 +1,19 @@
-﻿using core.implementations;
+﻿using application.implementations;
+using application.strategies;
 using domain.implementations;
 using domain.interfaces;
 using display.implementations;
 
-const int ElevatorCapacity = 8;
-const int TickDelayMs = 500;
+using domain.exceptions;
+using Serilog;
+
+
+const int elevatorCapacity = 8;
+const int tickDelayMs = 500;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File($"logs/simulation_{DateTime.Now:yyyyMMdd_HHmmss}.log")
+    .CreateLogger();
 
 static int ReadInt(string prompt, int min, int max)
 {
@@ -17,14 +26,14 @@ static int ReadInt(string prompt, int min, int max)
     }
 }
 
-var floorCount    = ReadInt("Floors: ",     ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
-var elevatorCount = ReadInt("Elevators: ",  ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
-var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount,       Simulation.MaxPassengerCount);
+var floorCount = ReadInt("Floors: ",     ElevatorController.MinFloorCount,    ElevatorController.MaxFloorCount);
+var elevatorCount  = ReadInt("Elevators: ",  ElevatorController.MinElevatorCount, ElevatorController.MaxElevatorCount);
+var passengerCount = ReadInt("Passengers: ", Simulation.MinPassengerCount,        Simulation.MaxPassengerCount);
 
 var random = new Random();
 
 var floors = Enumerable.Range(1, floorCount)
-    .Select(number => (IFloor)new Floor(number, new List<IPassenger>()))
+    .Select(n => (IFloor)new Floor(n, new List<IPassenger>()))
     .ToList();
 
 IFloor StartingFloor(int elevatorIndex)
@@ -37,17 +46,31 @@ IFloor StartingFloor(int elevatorIndex)
 }
 
 var elevators = Enumerable.Range(0, elevatorCount)
-    .Select(i => (IElevator)new PassengerElevator(ElevatorCapacity, StartingFloor(i)))
+    .Select(i => (IElevator)new PassengerElevator(elevatorCapacity, StartingFloor(i)))
     .ToList();
 
-var simulation = new Simulation(floors, elevators, passengerCount, random);
+var strategy = new NearestFloorStrategy();
+var controller = new ElevatorController(floors, elevators, strategy);
+var simulation = new Simulation(floors, elevators, controller, passengerCount, random, Log.Logger);
 var renderer = new ConsoleRenderer(floors, elevators);
 
-while (!simulation.IsComplete)
+try
 {
-    simulation.Tick();
-    renderer.Render();
-    Thread.Sleep(TickDelayMs);
+    while (!simulation.IsComplete)
+    {
+        simulation.Tick();
+        renderer.Render();
+        Thread.Sleep(tickDelayMs);
+    }
+
+}
+catch (ElevatorAtCapacityException ex)
+{
+    Console.WriteLine(ex.Message);
+}
+catch (FloorOutOfBoundsException ex)
+{
+    Console.WriteLine(ex.Message);
 }
 
 Console.WriteLine($"Simulation complete. {simulation.Delivered} passengers delivered.");

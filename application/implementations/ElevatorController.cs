@@ -1,11 +1,11 @@
 using domain.exceptions;
 
-namespace core.implementations;
+namespace application.implementations;
 
 using domain.enums;
 using domain.interfaces;
 
-public class ElevatorController
+public class ElevatorController : IElevatorController
 {
     public const int MinFloorCount = 2;
     public const int MaxFloorCount = 99;
@@ -13,7 +13,6 @@ public class ElevatorController
     public const int MaxElevatorCount = 9;
 
     private readonly List<IFloor> _floors;
-    private readonly List<IElevator> _elevators;
     private readonly IDispatchStrategy _dispatchStrategy;
 
     public ElevatorController(List<IFloor> floors, List<IElevator> elevators, IDispatchStrategy dispatchStrategy)
@@ -25,36 +24,28 @@ public class ElevatorController
             throw new TooManyElevatorsException(elevators.Count);
 
         _floors = floors;
-        _elevators = elevators;
         _dispatchStrategy = dispatchStrategy;
     }
 
-    public IElevator Dispatch(IFloor targetFloor)
+    public IElevator Dispatch(IFloor targetFloor, IReadOnlyList<IElevator> candidates)
     {
-        var elevator = _dispatchStrategy.SelectElevator(_elevators, targetFloor);
-        MoveToFloor(elevator, targetFloor);
+        var elevator = _dispatchStrategy.SelectElevator(candidates, targetFloor);
         return elevator;
     }
 
     public void MoveToFloor(IElevator elevator, IFloor targetFloor)
     {
-        while (elevator.CurrentFloor.FloorNumber != targetFloor.FloorNumber)
+        var diff = targetFloor.FloorNumber - elevator.CurrentFloor.FloorNumber;
+        if (diff > 0)
         {
-            if (elevator.CurrentFloor.FloorNumber < targetFloor.FloorNumber)
-            {
-                elevator.SetDirection(Direction.Upwards);
-                var next = _floors.First(f => f.FloorNumber == elevator.CurrentFloor.FloorNumber + 1);
-                elevator.MoveUp(next);
-            }
-            else
-            {
-                elevator.SetDirection(Direction.Downwards);
-                var next = _floors.First(f => f.FloorNumber == elevator.CurrentFloor.FloorNumber - 1);
-                elevator.MoveDown(next);
-            }
+            elevator.SetDirection(Direction.Upwards);
+            elevator.MoveUp(GetFloor(elevator.CurrentFloor.FloorNumber + 1));
         }
-
-        elevator.SetDirection(Direction.None);
+        else if (diff < 0)
+        {
+            elevator.SetDirection(Direction.Downwards);
+            elevator.MoveDown(GetFloor(elevator.CurrentFloor.FloorNumber - 1));
+        }
     }
 
     public IFloor GetFloor(int floorNumber) =>
