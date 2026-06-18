@@ -42,23 +42,17 @@ public class ElevatorController : IElevatorController
     
     public void MoveToFloor(IElevator elevator, IFloor targetFloor)
     {
-        while (elevator.CurrentFloor.FloorNumber != targetFloor.FloorNumber)
-        {
-            if (elevator.CurrentFloor.FloorNumber < targetFloor.FloorNumber)
+            var diff = targetFloor.FloorNumber - elevator.CurrentFloor.FloorNumber;
+            if (diff > 0)
             {
                 elevator.SetDirection(Direction.Upwards);
-                var next = _floors.First(f => f.FloorNumber == elevator.CurrentFloor.FloorNumber + 1);
-                elevator.MoveUp(next);
+                elevator.MoveUp(GetFloor(elevator.CurrentFloor.FloorNumber + 1));
             }
-            else
+            else if (diff < 0)
             {
                 elevator.SetDirection(Direction.Downwards);
-                var next = _floors.First(f => f.FloorNumber == elevator.CurrentFloor.FloorNumber - 1);
-                elevator.MoveDown(next);
+                elevator.MoveDown(GetFloor(elevator.CurrentFloor.FloorNumber - 1));
             }
-        }
-
-        elevator.SetDirection(Direction.None);
     }
 
     public IFloor GetFloor(int floorNumber) =>

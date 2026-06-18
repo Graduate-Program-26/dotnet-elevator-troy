@@ -49,10 +49,10 @@ var elevators = Enumerable.Range(0, elevatorCount)
     .Select(i => (IElevator)new PassengerElevator(elevatorCapacity, StartingFloor(i)))
     .ToList();
 
-var strategy   = new NearestFloorStrategy();
+var strategy = new NearestFloorStrategy();
 var controller = new ElevatorController(floors, elevators, strategy);
 var simulation = new Simulation(floors, elevators, controller, passengerCount, random, Log.Logger);
-var renderer   = new ConsoleRenderer(floors, elevators);
+var renderer = new ConsoleRenderer(floors, elevators);
 
 try
 {

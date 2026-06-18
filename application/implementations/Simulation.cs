@@ -43,6 +43,7 @@ public sealed class Simulation
         _floorsByNumber = floors.ToDictionary(f => f.FloorNumber);
         //dict is good way to store elevators as theyre now accessible by dictionary index
         //but it has quirk where now each elevator spawns on its index floor instead of first floor
+        //The IFloor? cast is necessary or this doesnt compile, basically tell scompiler that it is dict<IElevator, IFloor>
         _targets = elevators.ToDictionary(e => e, e => (IFloor?)null);
         _logger = logger;
     }
@@ -50,7 +51,7 @@ public sealed class Simulation
     public void Tick()
     {
         TrySpawnPassenger();
-        AssignTargets();
+        AssignTargetFloors();
         StepElevators();
     }
 
@@ -75,7 +76,7 @@ public sealed class Simulation
         return candidates[_random.Next(candidates.Count)];
     }
 
-    private void AssignTargets()
+    private void AssignTargetFloors()
     {
         var floorsNeedingService = _floors
             .Where(f => f.WaitingPassengers.Count > 0 && !_targets.ContainsValue(f))
@@ -106,25 +107,13 @@ public sealed class Simulation
 
     private void StepElevator(IElevator elevator)
     {
-        var target = _targets[elevator];
-        if (target == null) return;
+            var target = _targets[elevator];
+            if (target == null) return;
 
-        var diff = target.FloorNumber - elevator.CurrentFloor.FloorNumber;
-
-        if (diff > 0)
-        {
-            elevator.SetDirection(Direction.Upwards);
-            elevator.MoveUp(FloorByNumber(elevator.CurrentFloor.FloorNumber + 1));
-        }
-        else if (diff < 0)
-        {
-            elevator.SetDirection(Direction.Downwards);
-            elevator.MoveDown(FloorByNumber(elevator.CurrentFloor.FloorNumber - 1));
-        }
-        else
-        {
-            HandleArrival(elevator, target);
-        }
+            if (elevator.CurrentFloor.FloorNumber == target.FloorNumber)
+                HandleArrival(elevator, target);
+            else
+                _controller.MoveToFloor(elevator, target);
     }
 
     private void HandleArrival(IElevator elevator, IFloor floor)
@@ -132,7 +121,7 @@ public sealed class Simulation
         elevator.SetDirection(Direction.None);
         BoardWaitingPassengers(elevator, floor);
         DeboardArrivedPassengers(elevator);
-        _targets[elevator] = NextTarget(elevator);
+        _targets[elevator] = NextTargetFloor(elevator);
     }
 
     private void BoardWaitingPassengers(IElevator elevator, IFloor floor)
@@ -165,10 +154,9 @@ public sealed class Simulation
         }
     }
 
-    private IFloor? NextTarget(IElevator elevator) =>
+    private IFloor? NextTargetFloor(IElevator elevator) =>
         elevator.BoardedPassengers.Count > 0
-            ? FloorByNumber(elevator.BoardedPassengers.First().WantFloor)
+            ? _controller.GetFloor(elevator.BoardedPassengers.First().WantFloor)
             : null;
 
-    private IFloor FloorByNumber(int number) => _floorsByNumber[number];
 }
