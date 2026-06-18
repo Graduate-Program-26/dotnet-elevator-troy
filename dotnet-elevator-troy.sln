@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "application", "application\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "display", "display\display.csproj", "{81757E20-18E8-4DEF-94D2-299C141487FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "domain.tests", "domain.tests\domain.tests.csproj", "{686624F7-8BAE-4CF9-8556-E27B08E003E9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{686624F7-8BAE-4CF9-8556-E27B08E003E9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

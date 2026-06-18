@@ -92,7 +92,7 @@ public sealed class Simulation
         {
             if (idleElevators.Count == 0) break;
 
-            var elevator = _controller.SelectElevator(floor, idleElevators);
+            var elevator = _controller.Dispatch(floor, idleElevators);
             _targets[elevator] = floor;
             var elevatorNumber = _elevators.IndexOf(elevator) + 1;
             _logger.Information($"Elevator {elevatorNumber} dispatched to floor {floor.FloorNumber}");
